@@ -114,7 +114,7 @@ public:
          * a large 32-bit integer with any alignment.
          */
         //pchMessageStart[0] = 0xf9;
-		pchMessageStart[0] = 0xf8;
+		pchMessageStart[0] = 0xf9;
         pchMessageStart[1] = 0xbe;
         pchMessageStart[2] = 0xb4;
         pchMessageStart[3] = 0xd9;
@@ -122,11 +122,11 @@ public:
         nPruneAfterHeight = 100000;
 
         //genesis = CreateGenesisBlock(1231006505, 2083236893, 0x1d00ffff, 1, 50 * COIN);
-		genesis = CreateGenesisBlock(1566280800, 1245101216, 0x1d00ffff, 1, 50 * COIN);
+		genesis = CreateGenesisBlock(1567407600, 1453786502, 0x1d00ffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
         //assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
         //assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
-		assert(consensus.hashGenesisBlock == uint256S("0x0000000074dd58daa90ab73a67add495c12d149ab7107e8f63bdf0d1671bd6f0"));
+		assert(consensus.hashGenesisBlock == uint256S("0x000000005cf66aea1a7a3e129d33b83bb6e63da128eeb373d3ac053ea4dc4c46"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 		
         // Note that of those which support the service bits prefix, most only support a subset of
@@ -158,7 +158,7 @@ public:
         checkpointData = {
             {
                 //{ 11111, uint256S("0x0000000069e244f73d78e8fd29ba2fd2ed618bd6fa2ee92559f542fdb26e7c1d")},
-				{ 00000, uint256S("0x0000000074dd58daa90ab73a67add495c12d149ab7107e8f63bdf0d1671bd6f0")},
+				{ 00000, uint256S("0x000000005cf66aea1a7a3e129d33b83bb6e63da128eeb373d3ac053ea4dc4c46")},
                 { 33333, uint256S("0x000000002dd5588a74784eaa7ab0507a18ad16a236e7b1ce69f00d7ddfb5d0a6")},
                 { 74000, uint256S("0x0000000000573993a3c9e41ce34471c079dcf5f52a0e824a81e7f953b8661a20")},
                 {105000, uint256S("0x00000000000291ce28027faea320c8d2b054b2e0fe44a773f3eefb151d6bdc97")},
