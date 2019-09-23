@@ -126,7 +126,7 @@ public:
         consensus.hashGenesisBlock = genesis.GetHash();
         //assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
         //assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
-		assert(consensus.hashGenesisBlock == uint256S("0x000000005cf66aea1a7a3e129d33b83bb6e63da128eeb373d3ac053ea4dc4c46"));
+		assert(consensus.hashGenesisBlock == uint256S("0x78d7b376080240f004d33306d489f5adfc6d4ed9caa9b541723419f9bbfb137b"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 		
         // Note that of those which support the service bits prefix, most only support a subset of
@@ -158,7 +158,7 @@ public:
         checkpointData = {
             {
                 //{ 11111, uint256S("0x0000000069e244f73d78e8fd29ba2fd2ed618bd6fa2ee92559f542fdb26e7c1d")},
-				{ 00000, uint256S("0x000000005cf66aea1a7a3e129d33b83bb6e63da128eeb373d3ac053ea4dc4c46")},
+				{ 00000, uint256S("0x78d7b376080240f004d33306d489f5adfc6d4ed9caa9b541723419f9bbfb137b")},
                 { 33333, uint256S("0x000000002dd5588a74784eaa7ab0507a18ad16a236e7b1ce69f00d7ddfb5d0a6")},
                 { 74000, uint256S("0x0000000000573993a3c9e41ce34471c079dcf5f52a0e824a81e7f953b8661a20")},
                 {105000, uint256S("0x00000000000291ce28027faea320c8d2b054b2e0fe44a773f3eefb151d6bdc97")},
@@ -176,10 +176,13 @@ public:
 
         chainTxData = ChainTxData{
             // Data as of block 0000000000000000002d6cca6761c99b3c2e936f9a0e304b7c7651a993f461de (height 506081).
-            1516903077, // * UNIX timestamp of last known number of transactions
-            295363220,  // * total number of transactions between genesis and that timestamp
+            //1516903077, // * UNIX timestamp of last known number of transactions
+            //295363220,  // * total number of transactions between genesis and that timestamp
+			1569222000,
+			0,
+			1
                         //   (the tx=... number in the SetBestChain debug.log lines)
-            3.5         // * estimated number of transactions per second after that timestamp
+            //3.5         // * estimated number of transactions per second after that timestamp
         };
     }
 };
