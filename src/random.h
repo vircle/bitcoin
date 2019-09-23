@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2009-2018 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,12 +11,15 @@
 #include <uint256.h>
 
 #include <stdint.h>
-
-/* Seed OpenSSL PRNG with additional entropy data */
-void RandAddSeed();
+#include <limits>
 
 /**
- * Functions to gather random data via the OpenSSL PRNG
+ * Generate random data via the internal PRNG.
+ *
+ * These functions are designed to be fast (sub microsecond), but do not necessarily
+ * meaningfully add entropy to the PRNG state.
+ *
+ * Thread-safe.
  */
 void GetRandBytes(unsigned char* buf, int num);
 uint64_t GetRand(uint64_t nMax);
@@ -24,21 +27,26 @@ int GetRandInt(int nMax);
 uint256 GetRandHash();
 
 /**
- * Add a little bit of randomness to the output of GetStrongRangBytes.
- * This sleeps for a millisecond, so should only be called when there is
- * no other work to be done.
- */
-void RandAddSeedSleep();
-
-/**
- * Function to gather random data from multiple sources, failing whenever any
- * of those source fail to provide a result.
+ * Gather entropy from various sources, feed it into the internal PRNG, and
+ * generate random data using it.
+ *
+ * This function will cause failure whenever the OS RNG fails.
+ *
+ * Thread-safe.
  */
 void GetStrongRandBytes(unsigned char* buf, int num);
 
 /**
+ * Sleep for 1ms, gather entropy from various sources, and feed them to the PRNG state.
+ *
+ * Thread-safe.
+ */
+void RandAddSeedSleep();
+
+/**
  * Fast randomness source. This is seeded once with secure random data, but
- * is completely deterministic and insecure after that.
+ * is completely deterministic and does not gather more entropy after that.
+ *
  * This class is not thread-safe.
  */
 class FastRandomContext {
@@ -74,6 +82,14 @@ public:
 
     /** Initialize with explicit seed (only for testing) */
     explicit FastRandomContext(const uint256& seed);
+
+    // Do not permit copying a FastRandomContext (move it, or create a new one to get reseeded).
+    FastRandomContext(const FastRandomContext&) = delete;
+    FastRandomContext(FastRandomContext&&) = delete;
+    FastRandomContext& operator=(const FastRandomContext&) = delete;
+
+    /** Move a FastRandomContext. If the original one is used again, it will be reseeded. */
+    FastRandomContext& operator=(FastRandomContext&& from) noexcept;
 
     /** Generate a random 64-bit integer. */
     uint64_t rand64()
@@ -121,7 +137,36 @@ public:
 
     /** Generate a random boolean. */
     bool randbool() { return randbits(1); }
+
+    // Compatibility with the C++11 UniformRandomBitGenerator concept
+    typedef uint64_t result_type;
+    static constexpr uint64_t min() { return 0; }
+    static constexpr uint64_t max() { return std::numeric_limits<uint64_t>::max(); }
+    inline uint64_t operator()() { return rand64(); }
 };
+
+/** More efficient than using std::shuffle on a FastRandomContext.
+ *
+ * This is more efficient as std::shuffle will consume entropy in groups of
+ * 64 bits at the time and throw away most.
+ *
+ * This also works around a bug in libstdc++ std::shuffle that may cause
+ * type::operator=(type&&) to be invoked on itself, which the library's
+ * debug mode detects and panics on. This is a known issue, see
+ * https://stackoverflow.com/questions/22915325/avoiding-self-assignment-in-stdshuffle
+ */
+template<typename I, typename R>
+void Shuffle(I first, I last, R&& rng)
+{
+    while (first != last) {
+        size_t j = rng.randrange(last - first);
+        if (j) {
+            using std::swap;
+            swap(*first, *(first + j));
+        }
+        ++first;
+    }
+}
 
 /* Number of random bytes returned by GetOSRand.
  * When changing this constant make sure to change all call sites, and make
@@ -140,7 +185,12 @@ void GetOSRand(unsigned char *ent32);
  */
 bool Random_SanityCheck();
 
-/** Initialize the RNG. */
+/**
+ * Initialize global RNG state and log any CPU features that are used.
+ *
+ * Calling this function is optional. RNG state will be initialized when first
+ * needed if it is not called.
+ */
 void RandomInit();
 
 #endif // BITCOIN_RANDOM_H

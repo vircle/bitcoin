@@ -133,7 +133,7 @@ public:
 #endif
 
         // Seed OpenSSL PRNG with performance counter
-        RandAddSeed();
+        //RandAddSeed();
     }
     ~CInit()
     {
@@ -272,7 +272,7 @@ bool GetLogCategory(uint32_t *f, const std::string *str)
     }
     return false;
 }
-
+/*
 std::string ListLogCategories()
 {
     std::string ret;
@@ -302,7 +302,7 @@ std::vector<CLogCategoryActive> ListActiveLogCategories()
     }
     return ret;
 }
-
+*/
 /**
  * fStartedNewLine is a state variable held by the calling context that will
  * suppress printing of the timestamp when multiple calls are made that don't
